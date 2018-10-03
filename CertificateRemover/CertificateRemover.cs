@@ -22,7 +22,7 @@ namespace CertificateRemover
             foreach (var cert in col)
             {
                 Console.WriteLine(cert.SubjectName.Name);
-                //store.Remove(cert);
+                store.Remove(cert);
             }
 
             return true;
