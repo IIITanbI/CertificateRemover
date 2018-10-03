@@ -9,27 +9,28 @@ namespace CertificateRemover
         static void Main(string[] args)
         {
             var certificate = args[0];
-            var remover = new CertificateRemover();
             CancellationTokenSource cts = new CancellationTokenSource();
             CancellationToken token = cts.Token;
 
             Console.WriteLine("Press any key to exit...");
-            Task.Factory.StartNew(() =>
+            using (var remover = new CertificateRemover())
             {
-                while (true)
+                Task.Factory.StartNew(() =>
                 {
-                    if (token.IsCancellationRequested)
+                    while (true)
                     {
-                        token.ThrowIfCancellationRequested();
+                        if (token.IsCancellationRequested)
+                        {
+                            token.ThrowIfCancellationRequested();
+                        }
+                        remover.TryDelete(certificate);
+                        Thread.Sleep(1000);
                     }
-                    remover.TryDelete(certificate);
-                    Thread.Sleep(1000);
-                }
-            }, token);
+                }, token);
 
-            Console.ReadKey();
-            cts.Cancel();
-            remover.Dispose();
+                Console.ReadKey();
+                cts.Cancel();
+            }
         }
     }
 }
